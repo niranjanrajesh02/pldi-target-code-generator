@@ -8,6 +8,6 @@ int main() {
   int x = 10;
   x = 10 - 1;
   int y = 20 * x;
-  hey(x, y);
+  int ans = hey(x, y);
   return y;
 }

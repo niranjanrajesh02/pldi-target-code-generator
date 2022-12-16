@@ -107,7 +107,6 @@ symboltable *sym_update(char *name, char *attr, union var_value new_val)
     }
     /* otherwise continue to next */
   }
-  printf("Too many symbols\n");
 
 } /* update */
 
@@ -227,6 +226,7 @@ void check_quad(quad *q)
       rtmArr[rtmPtr] = (rtm *)malloc(sizeof(rtm));
       rtmArr[rtmPtr]->reg = res;
       rtmArr[rtmPtr]->temp = q->result;
+      q->result = res;
       rtmPtr++;
     }
     if (starts_with("t", q->arg1))
@@ -235,6 +235,7 @@ void check_quad(quad *q)
       rtmArr[rtmPtr] = (rtm *)malloc(sizeof(rtm));
       rtmArr[rtmPtr]->reg = arg1;
       rtmArr[rtmPtr]->temp = q->arg1;
+      q->arg1 = arg1;
       rtmPtr++;
     }
     if (starts_with("t", q->arg2))
@@ -243,9 +244,10 @@ void check_quad(quad *q)
       rtmArr[rtmPtr] = (rtm *)malloc(sizeof(rtm));
       rtmArr[rtmPtr]->reg = arg2;
       rtmArr[rtmPtr]->temp = q->arg2;
+      q->arg2 = arg2;
       rtmPtr++;
     }
-    printf("%s = %s %s %s\n", res, arg1, q->op, arg2);
+    // printf("%s = %s %s %s\n", res, arg1, q->op, arg2);
   }
   else if (q->op_type == "unary")
   {
@@ -261,6 +263,7 @@ void check_quad(quad *q)
       rtmArr[rtmPtr] = (rtm *)malloc(sizeof(rtm));
       rtmArr[rtmPtr]->reg = ures;
       rtmArr[rtmPtr]->temp = q->result;
+      q->result = ures;
       rtmPtr++;
     }
     if (starts_with("t", q->arg1))
@@ -269,9 +272,10 @@ void check_quad(quad *q)
       rtmArr[rtmPtr] = (rtm *)malloc(sizeof(rtm));
       rtmArr[rtmPtr]->reg = uarg1;
       rtmArr[rtmPtr]->temp = q->arg1;
+      q->arg1 = uarg1;
       rtmPtr++;
     }
-    printf("%s %s %s\n", ures, q->op, uarg1);
+    // printf("%s %s %s\n", ures, q->op, uarg1);
   }
 }
 
@@ -390,7 +394,6 @@ void print_func_blocks()
       print_quad(funcBlockArr[i]->local_quads[j], "quads");
     }
   }
-  update_offset();
 }
 
 // updates offset col in symtab
@@ -409,7 +412,6 @@ void update_offset()
       offset = offset + 4; // TODO change to 1 for char
       union var_value off;
       off.int_val = offset;
-
       if (j == 0)
       {
         sym_update(funcBlockArr[i]->local_quads[j]->arg1, "offset", off);

@@ -113,15 +113,24 @@ CHAR_CONSTANT: CHAR_C { $$ = strdup(yytext); printf("CHAR_CONSTANT: CHAR_C\n");}
 
 postfix_expression: primary_expression { $$ = $1; printf("postfix_expression: primary_expression\n");}
 | postfix_expression LSBRACK expression RSBRACK { printf("postfix_expression: postfix_expression '[' expression ']'\n");}
-| postfix_expression LPAREN argument_expression_list_opt RPAREN {printf("postfix_expression: postfix_expression '(' argument_expression_list_opt ')'\n");}
+| postfix_expression LPAREN argument_expression_list_opt RPAREN {
+  char *temp = gentemp("0", "INT");
+  $$ = temp;
+  qArray[quadPtr++] = new_quad_binary("", temp, "call", $1);
+  printf("postfix_expression: postfix_expression '(' argument_expression_list_opt ')'\n");
+  }
 | postfix_expression ARROW ID {printf("postfix_expression: postfix_expression ARROW ID\n");}
 ;
 
 argument_expression_list_opt: argument_expression_list {printf("argument_expression_list_opt: argument_expression_list\n");}
 | /* epsilon */ {printf("argument_expression_list_opt: /* epsilon */\n");}
 
-argument_expression_list: assignment_expression {printf("argument_expression_list: assignment_expression\n");}
-| argument_expression_list COMMA assignment_expression  {printf("argument_expression_list: argument_expression_list ',' assignment_expression\n");}
+argument_expression_list: assignment_expression {
+  qArray[quadPtr++] = new_quad_unary("", "param", $1);
+  printf("argument_expression_list: assignment_expression\n");}
+| argument_expression_list COMMA assignment_expression  {
+  qArray[quadPtr++] = new_quad_unary("", "param", $3);
+  printf("argument_expression_list: argument_expression_list ',' assignment_expression\n");}
 ;
 
 unary_expression: postfix_expression {$$=$1; printf("unary_expression: postfix_expression\n");}

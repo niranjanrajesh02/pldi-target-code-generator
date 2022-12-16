@@ -14,8 +14,6 @@ int main()
   printSymbolTable();
   printf("\nQuads:\n");
   print_quad_array();
-  // printf("\nRegister Allocation:\n");
-  // register_allocation();
   // printf("\nTarget Code:\n");
   // print hello world in new file
   // FILE *fp = fopen("target_code.asm", "w");
@@ -23,8 +21,15 @@ int main()
   // target_code_translation();
   // print_rtm_array();
   make_func_blocks();
-  print_func_blocks();
+  update_offset();
   printf("\nUpdated Symbol Table:\n");
   printSymbolTable();
+
+  printf("\nRegister Allocation:\n");
+  register_allocation();
+  print_quad_array();
+
+  // make_func_blocks();
+  print_func_blocks();
   return 0;
 }
