@@ -110,6 +110,18 @@ symboltable *sym_update(char *name, char *attr, union var_value new_val)
 
 } /* update */
 
+void printSymbolTable()
+{
+  int i;
+  for (i = 0; i < NSYMS; i++)
+  {
+    if (symtab[i].name)
+    {
+      printf("Entry %d:\t name = %s\t type = %s\t initial_value = %s\t size = %d\t offset = +%d\n", i, symtab[i].name, symtab[i].type, symtab[i].initial_value, symtab[i].size, symtab[i].offset);
+    }
+  }
+}
+
 char *gentemp(char *val, char *type)
 {
   static int c = 0; /* Temp counter */
@@ -124,18 +136,6 @@ char *gentemp(char *val, char *type)
   new.char_val = type;
   sym_update(str, "type", new);
   return strdup(str);
-}
-
-void printSymbolTable()
-{
-  int i;
-  for (i = 0; i < NSYMS; i++)
-  {
-    if (symtab[i].name)
-    {
-      printf("Entry %d:\t name = %s\t type = %s\t initial_value = %s\t size = %d\t offset = +%d\t nested table = %s\n", i, symtab[i].name, symtab[i].type, symtab[i].initial_value, symtab[i].size, symtab[i].offset, symtab[i].nested);
-    }
-  }
 }
 
 char *convert_int_to_string(int num)
@@ -343,11 +343,16 @@ void make_func_blocks()
         extern int quadPtr;
         for (j; j < quadPtr; ++j)
         {
-          funcBlockArr[funcBlockPtr]->local_quads[funcBlockArr[funcBlockPtr]->quad_ptr] = qArray[j];
-          funcBlockArr[funcBlockPtr]->quad_ptr++;
-          if (strcmp(qArray[j]->result, "return") == 0)
+          if (qArray[j])
           {
-            break;
+            int k = funcBlockArr[funcBlockPtr]->local_quad_ptr;
+            // printf("funcblockptr = %d\t quadptr = %d\n", funcBlockPtr, k);
+            funcBlockArr[funcBlockPtr]->local_quads[k] = qArray[j];
+            funcBlockArr[funcBlockPtr]->local_quad_ptr = k + 1;
+            if (strcmp(qArray[j]->result, "return") == 0)
+            {
+              break;
+            }
           }
         }
         funcBlockPtr++;
@@ -379,7 +384,7 @@ void print_func_blocks()
   {
     printf("\n");
     printf("function name = %s\n", funcBlockArr[i]->name);
-    for (int j = 0; j < funcBlockArr[i]->quad_ptr; ++j)
+    for (int j = 0; j < funcBlockArr[i]->local_quad_ptr; ++j)
     {
       print_quad(funcBlockArr[i]->local_quads[j], "quads");
     }
@@ -396,7 +401,7 @@ void update_offset()
     int offset = 0;
     union var_value off;
     off.int_val = offset;
-    for (int j = 0; j < funcBlockArr[i]->quad_ptr; ++j)
+    for (int j = 0; j < funcBlockArr[i]->local_quad_ptr; ++j)
     {
       // printf("\nFunc no = %d\t Quad no = %d\n", i, j);
       offset = offset + 4;

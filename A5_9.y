@@ -36,7 +36,7 @@ int funcBlockPtr = 0; // Index of funcBlock array
 %type <strval> multiplicative_expression additive_expression relational_expression equality_expression
 %type <strval> logical_and_expression logical_or_expression conditional_expression assignment_expression expression
 %type <strval> declaration init_declarator type_specifier declarator direct_declarator parameter_list_opt parameter_list parameter_declaration
-%type <strval> ID_opt initialiser constants
+%type <strval> initialiser constants
 %type <strval> statement compound_statement block_item_list_opt block_item_list block_item expression_statement selection_statement iteration_statement jump_statement expression_opt
 %type <strval> prog translation_unit function_definition declaration_list_opt declaration_list
 
@@ -176,12 +176,16 @@ additive_expression: multiplicative_expression {$$ = $1; printf("additive_expres
   char *s1_name = $1;
   char *s3_name = $3;
   if (symfind(s1)) {
-    s1 = symfind(s1)->initial_value;
-    s1_name = symlook($1);
+    if (symfind(s1)->initial_value) {
+      s1 = symfind(s1)->initial_value;
+      s1_name = symlook($1);
+    }
   };
   if (symfind(s3)) {
-    s3 = symfind(s3)->initial_value;
-    s3_name = symlook($3);
+    if (symfind(s3)->initial_value) {
+      s3 = symfind(s3)->initial_value;
+      s3_name = symlook($3);
+    }
   };
   char *temp = gentemp(convert_int_to_string(convert_string_to_int(s1) + convert_string_to_int(s3)), "INT");
   $$ = temp;
@@ -278,24 +282,32 @@ pointer_opt: AST {printf("pointer_opt: '*'' \n");}
 
 direct_declarator: ID { $$=$1; printf("SA ID: %s\n", $1); printf("direct_declarator: ID \n");}
 | ID LSBRACK INT_CONSTANT RSBRACK {printf("direct_declarator: ID '[' INT_CONSTANT ']' \n");}
-| ID LPAREN parameter_list_opt RPAREN {printf("direct_declarator: ID '(' parameter_list_opt ')' \n");}
+| ID LPAREN parameter_list_opt RPAREN {
+  printf("direct_declarator: ID '(' parameter_list_opt ')' \n");
+  }
 ;
 
 parameter_list_opt: parameter_list {printf("parameter_list_opt: parameter_list \n");} 
 | /*epsilon*/  {printf("parameter_list_opt: /*epsilon*/ \n");}
 ;
 
-parameter_list: parameter_declaration {printf("parameter_list: parameter_declaration \n");}
-| parameter_list COMMA parameter_declaration {printf("parameter_list: parameter_list ',' parameter_declaration \n");}
+parameter_list: parameter_declaration {
+  // printf("\n\nParam: %s\n\n", $1);
+  printf("parameter_list: parameter_declaration \n");}
+| parameter_list COMMA parameter_declaration {
+  
+  printf("parameter_list: parameter_list ',' parameter_declaration \n");}
 ;
 
-parameter_declaration: type_specifier pointer_opt ID_opt {printf("parameter_declaration: type_specifier pointer_opt ID_opt \n");}
+parameter_declaration: type_specifier pointer_opt ID {
+  char *param = strdup($3);
+  union var_value val;
+  val.char_val = "param";
+  sym_update(param, "type", val);
+  val.char_val = "0";
+  sym_update(param, "initial_value", val);
+  printf("parameter_declaration: type_specifier pointer_opt ID \n");}
 ; 
-
-
-ID_opt: ID {$$=$1; printf("ID_opt: ID \n");} 
-| /*epsilon*/ {printf("ID_opt: /*epsilon*/ \n");}
-;
 
 ID: IDENTIFIER {$$ = strdup($1);}
 

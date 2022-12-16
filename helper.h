@@ -32,8 +32,8 @@ typedef struct quad_tag
 typedef struct function_block
 {
   char *name;
-  quad *local_quads[20];
-  int quad_ptr;
+  quad *local_quads[100];
+  int local_quad_ptr;
 } func_block;
 
 quad *qArray[NSYMS]; // Store of Quads
