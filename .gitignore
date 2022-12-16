@@ -1,0 +1,7 @@
+*.tar
+*.out
+y*
+*.out
+lex*
+*.o
+/Submission/

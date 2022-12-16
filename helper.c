@@ -165,7 +165,6 @@ quad *new_quad_binary(char *op1, char *s1, char *s2, char *s3)
 quad *new_quad_unary(char *op1, char *s1, char *s2)
 {
   quad *q = (quad *)malloc(sizeof(quad));
-
   q->op = op1;
   if (s1)
   {
@@ -177,7 +176,6 @@ quad *new_quad_unary(char *op1, char *s1, char *s2)
   }
   q->arg2 = 0;
   q->op_type = "unary";
-
   return q;
 }
 
@@ -396,7 +394,6 @@ void update_offset()
   for (int i = 0; i < funcBlockPtr; ++i)
   {
     int offset = 0;
-    printf("\n");
     union var_value off;
     off.int_val = offset;
     for (int j = 0; j < funcBlockArr[i]->quad_ptr; ++j)
