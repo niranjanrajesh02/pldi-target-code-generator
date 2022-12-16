@@ -6,7 +6,8 @@ Function Blocks
 Target Code Translate Function
 - hardcoded
 
+Handle Conditionals
+- idk bro
 
-
-- function calls? (call and params)
+- efficient register_allocation?
 - scoping?  

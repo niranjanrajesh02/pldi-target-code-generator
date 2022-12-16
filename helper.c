@@ -289,6 +289,22 @@ void register_allocation()
     counter++;
   }
 }
+// check if temp value exists in rtm array
+char *gen_reg(char *temp)
+{
+  extern int regPtr;
+  extern int rtmPtr;
+  for (int i = 0; i < rtmPtr; ++i)
+  {
+    if (strcmp(temp, rtmArr[i]->temp) == 0)
+    {
+      return rtmArr[i]->reg;
+    }
+  }
+  char *res = malloc(100); // allocate memory for 'res'
+  sprintf(res, "r%02d", regPtr++);
+  return res;
+}
 
 void code_mapping()
 {
@@ -310,22 +326,6 @@ void print_rtm_array()
   }
 }
 
-// check if temp value exists in rtm array
-char *gen_reg(char *temp)
-{
-  extern int regPtr;
-  for (int i = 0; i < rtmPtr; ++i)
-  {
-    if (strcmp(temp, rtmArr[i]->temp) == 0)
-    {
-      return rtmArr[i]->reg;
-    }
-  }
-  char *res = malloc(100); // allocate memory for 'res'
-  sprintf(res, "r%02d", regPtr++);
-  return res;
-}
-
 void make_func_blocks()
 {
   extern int funcBlockPtr;
@@ -345,6 +345,7 @@ void make_func_blocks()
 
         // traverse through quad array from first_func_var till you find return
         int j = find_quad_index(first_func_var);
+        int r = i + 1;
         extern int quadPtr;
         for (j; j < quadPtr; ++j)
         {
@@ -360,38 +361,22 @@ void make_func_blocks()
             }
           }
         }
+        for (r; r > 0; ++r)
+        {
+          if (symtab[r].name && symtab[r].type)
+          {
+            if (strcmp(symtab[r].type, "param") == 0)
+            {
+              funcBlockArr[funcBlockPtr]->param_count = funcBlockArr[funcBlockPtr]->param_count + 1;
+            }
+            else
+            {
+              break;
+            }
+          }
+        }
         funcBlockPtr++;
       }
-    }
-  }
-}
-
-// find quad array index given quad name
-int find_quad_index(char *quad_name)
-{
-  extern int quadPtr;
-  for (int i = 0; i < quadPtr; ++i)
-  {
-    if (strcmp(qArray[i]->result, quad_name) == 0)
-    {
-      return i;
-    }
-  }
-  return -1;
-}
-
-// print function blocks
-void print_func_blocks()
-{
-  printf("\n");
-  extern int funcBlockPtr;
-  for (int i = 0; i < funcBlockPtr; ++i)
-  {
-    printf("\n");
-    printf("function name = %s\n", funcBlockArr[i]->name);
-    for (int j = 0; j < funcBlockArr[i]->local_quad_ptr; ++j)
-    {
-      print_quad(funcBlockArr[i]->local_quads[j], "quads");
     }
   }
 }
@@ -424,4 +409,56 @@ void update_offset()
       }
     }
   }
+}
+
+// find quad array index given quad name
+int find_quad_index(char *quad_name)
+{
+  extern int quadPtr;
+  for (int i = 0; i < quadPtr; ++i)
+  {
+    if (strcmp(qArray[i]->result, quad_name) == 0)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// print function blocks
+void print_func_blocks()
+{
+  printf("\n");
+  extern int funcBlockPtr;
+  // traverse functions
+  for (int i = 0; i < funcBlockPtr; ++i)
+  {
+    printf("\nfunction name: %s\n", funcBlockArr[i]->name);
+    print_function_prologue(i);
+    // traverse local quads of current function
+    for (int j = 0; j < funcBlockArr[i]->local_quad_ptr; ++j)
+    {
+      print_quad(funcBlockArr[i]->local_quads[j], "quads");
+    }
+    print_function_epilogue();
+  }
+}
+
+void print_function_prologue(int funcPtr)
+{
+  // printf("param_count = %d\n", funcBlockArr[funcPtr]->param_count);
+  int p = funcBlockArr[funcPtr]->param_count * 4;
+  printf("push ebp\n");
+  printf("mov ebp, esp\n");
+  printf("sub esp, %d\n", p);
+  printf("\n");
+}
+
+void print_function_epilogue()
+{
+  printf("\n");
+  printf("pop esi\n");
+  printf("mov esp, ebp\n");
+  printf("pop ebp\n");
+  printf("ret\n");
 }

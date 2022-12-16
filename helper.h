@@ -34,6 +34,7 @@ typedef struct function_block
   char *name;
   quad *local_quads[100];
   int local_quad_ptr;
+  int param_count;
 } func_block;
 
 quad *qArray[NSYMS]; // Store of Quads
@@ -89,6 +90,10 @@ void print_func_blocks();
 char *gen_reg(char *temp);
 
 int find_quad_index(char *quad_name);
+
+void print_function_prologue(int funcPtr);
+
+void print_function_epilogue();
 
 void update_offset();
 #endif
