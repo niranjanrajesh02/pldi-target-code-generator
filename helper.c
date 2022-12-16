@@ -29,6 +29,7 @@ char *symlook(char *s)
     /* is it already here? */
     if (sp->name && !strcmp(sp->name, s))
       return s;
+
     if (!sp->name)
     {
       /* is it free */
@@ -392,6 +393,7 @@ void print_func_blocks()
   update_offset();
 }
 
+// updates offset col in symtab
 void update_offset()
 {
   printf("\n");
@@ -404,9 +406,16 @@ void update_offset()
     for (int j = 0; j < funcBlockArr[i]->local_quad_ptr; ++j)
     {
       // printf("\nFunc no = %d\t Quad no = %d\n", i, j);
-      offset = offset + 4;
+      offset = offset + 4; // TODO change to 1 for char
       union var_value off;
       off.int_val = offset;
+
+      if (j == 0)
+      {
+        sym_update(funcBlockArr[i]->local_quads[j]->arg1, "offset", off);
+        offset = offset + 4;
+      }
+
       if (strcmp(funcBlockArr[i]->local_quads[j]->result, "return") != 0)
       {
         sym_update(funcBlockArr[i]->local_quads[j]->result, "offset", off);
