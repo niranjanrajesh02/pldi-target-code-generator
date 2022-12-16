@@ -1,0 +1,12 @@
+Function Blocks
+- add prologue and epilogue
+- add translate Function
+
+
+Target Code Translate Function
+- hardcoded
+
+
+
+- function calls? (call and params)
+- scoping?  
