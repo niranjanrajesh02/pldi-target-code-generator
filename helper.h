@@ -96,4 +96,9 @@ void print_function_prologue(int funcPtr);
 void print_function_epilogue();
 
 void update_offset();
+
+void target_code_translation(quad *q);
+
+void print_target();
+
 #endif

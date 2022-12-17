@@ -31,5 +31,7 @@ int main()
 
   // make_func_blocks();
   print_func_blocks();
+  printf("\nTarget Code:\n");
+  print_target();
   return 0;
 }

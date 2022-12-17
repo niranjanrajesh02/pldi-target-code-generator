@@ -306,14 +306,6 @@ char *gen_reg(char *temp)
   return res;
 }
 
-void code_mapping()
-{
-}
-void target_code_translation()
-{
-  code_mapping();
-}
-
 // function to add elements to rtm array in a loop
 extern int rtmPtr;
 // diagnostic function to print all elements in rtm array
@@ -461,4 +453,87 @@ void print_function_epilogue()
   printf("mov esp, ebp\n");
   printf("pop ebp\n");
   printf("ret\n");
+}
+
+void target_code_translation(quad *q)
+{
+  printf("\n");
+  if (strcmp(q->op_type, "binary") == 0)
+  {
+    char *op = q->op;
+
+    if (strcmp(op, "+") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("%s eax, DWORD PTR _%s$[ebp]\n", "add", q->arg2);
+      printf("mov DWORD PTR _%s$[ebp], ebx\n", q->result);
+    }
+    else if (strcmp(op, "-") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("%s eax, DWORD PTR _%s$[ebp]\n", "sub", q->arg2);
+      printf("mov DWORD PTR _%s$[ebp], ebx\n", q->result);
+    }
+    else if (strcmp(op, "*") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("%s eax, DWORD PTR _%s$[ebp]\n", "imul", q->arg2);
+      printf("mov DWORD PTR _%s$[ebp], ebx\n", q->result);
+    }
+    else if (strcmp(op, "/") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("cdq\n");
+      printf("%s eax, DWORD PTR _%s$[ebp]\n", "idiv", q->arg2);
+      printf("mov DWORD PTR _%s$[ebp], ebx\n", q->result);
+    }
+    else if (strcmp(op, "%") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("cdq\n");
+      printf("%s eax, DWORD PTR _%s$[ebp]\n", "idiv", q->arg2);
+      printf("mov DWORD PTR _%s$[ebp], edx\n", q->result);
+    }
+    else if (strcmp(q->arg1, "call") == 0)
+    {
+      printf("call _%s\n", q->arg2);
+    }
+  }
+
+  if (strcmp(q->op_type, "unary") == 0)
+  {
+    char *op = q->op;
+    if (strcmp(op, "-") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("neg eax\n");
+      printf("mov DWORD PTR _%s$[ebp], eax\n", q->result);
+    }
+    else if (strcmp(op, "=") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("mov DWORD PTR _%s$[ebp], eax\n", q->result);
+    }
+    else if (strcmp(q->result, "param") == 0)
+    {
+      printf("push DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("push eax\n");
+    }
+    else if (strcmp(q->result, "return") == 0)
+    {
+      printf("mov eax, DWORD PTR _%s$[ebp]\n", q->arg1);
+      printf("mov esp, ebp\n");
+      printf("pop ebp\n");
+      printf("ret 0\n");
+    }
+  }
+}
+
+void print_target()
+{
+  extern int quadPtr;
+  for (int i = 0; i < quadPtr; ++i)
+  {
+    target_code_translation(qArray[i]);
+  }
 }
