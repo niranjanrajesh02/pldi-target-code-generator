@@ -13,25 +13,27 @@ int main()
   printf("\nSymbol Table:\n");
   printSymbolTable();
   printf("\nQuads:\n");
-  print_quad_array();
-  // printf("\nTarget Code:\n");
-  // print hello world in new file
-  // FILE *fp = fopen("target_code.asm", "w");
-  // fprintf(fp, "Hello World!\n");
-  // target_code_translation();
-  // print_rtm_array();
+  print_quad_array("terminal", NULL);
+
+  FILE *fp = fopen("A5_group_quads.output", "w");
+  print_quad_array("file", fp);
+  fclose(fp);
+  printf("\nA5_9_group_quads.output generated\n\n");
+
+  // Makes a function block for each function to handle offset and TAC later on
   make_func_blocks();
   update_offset();
   printf("\nUpdated Symbol Table:\n");
   printSymbolTable();
 
+  // updates the quad temps with respective registers
   printf("\nRegister Allocation:\n");
   register_allocation();
-  print_quad_array();
+  print_quad_array("terminal", NULL);
 
-  // make_func_blocks();
-  print_func_blocks();
-  printf("\nTarget Code:\n");
-  print_target();
+  // // make_func_blocks();
+  // print_func_blocks();
+  // printf("\nTarget Code:\n");
+  // print_target();
   return 0;
 }

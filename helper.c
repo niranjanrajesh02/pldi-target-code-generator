@@ -179,9 +179,20 @@ quad *new_quad_unary(char *op1, char *s1, char *s2)
   return q;
 }
 
-void print_quad(quad *q, char *mode)
+void print_quad(quad *q, char *mode, FILE *fp)
 {
-  if (mode == "quads")
+  if (mode == "file")
+  {
+    if (q->op_type == "binary")
+    {
+      fprintf(fp, "%s = %s %s %s\n", q->result, q->arg1, q->op, q->arg2);
+    }
+    else if (q->op_type == "unary")
+    {
+      fprintf(fp, "%s %s %s\n", q->result, q->op, q->arg1);
+    }
+  }
+  else
   {
     if (q->op_type == "binary")
     {
@@ -194,12 +205,22 @@ void print_quad(quad *q, char *mode)
   }
 }
 
-void print_quad_array()
+void print_quad_array(char *mode, FILE *fp)
 {
   extern int quadPtr;
-  for (int i = 0; i < quadPtr; ++i)
+  if (strcmp(mode, "file") == 0)
   {
-    print_quad(qArray[i], "quads");
+    for (int i = 0; i < quadPtr; ++i)
+    {
+      print_quad(qArray[i], "file", fp);
+    };
+  }
+  else
+  {
+    for (int i = 0; i < quadPtr; ++i)
+    {
+      print_quad(qArray[i], "terminal", NULL);
+    }
   }
 }
 
@@ -289,6 +310,7 @@ void register_allocation()
     counter++;
   }
 }
+
 // check if temp value exists in rtm array
 char *gen_reg(char *temp)
 {
@@ -306,11 +328,10 @@ char *gen_reg(char *temp)
   return res;
 }
 
-// function to add elements to rtm array in a loop
-extern int rtmPtr;
 // diagnostic function to print all elements in rtm array
 void print_rtm_array()
 {
+  extern int rtmPtr;
   printf("\n");
   for (int i = 0; i < rtmPtr; ++i)
   {
@@ -430,7 +451,7 @@ void print_func_blocks()
     // traverse local quads of current function
     for (int j = 0; j < funcBlockArr[i]->local_quad_ptr; ++j)
     {
-      print_quad(funcBlockArr[i]->local_quads[j], "quads");
+      print_quad(funcBlockArr[i]->local_quads[j], "quads", NULL);
     }
     print_function_epilogue();
   }

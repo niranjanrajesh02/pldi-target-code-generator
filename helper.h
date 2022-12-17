@@ -67,9 +67,9 @@ char *gentemp(char *val, char *type);
 quad *new_quad_binary(char *op1, char *s1, char *s2, char *s3);
 quad *new_quad_unary(char *op1, char *s1, char *s2);
 
-void print_quad(quad *q, char *mode);
+void print_quad(quad *q, char *mode, FILE *fp);
 
-void print_quad_array();
+void print_quad_array(char *mode, FILE *fp);
 
 void register_allocation();
 

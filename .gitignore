@@ -4,4 +4,5 @@ y*
 *.out
 lex*
 *.o
+*.asm
 /Submission/
