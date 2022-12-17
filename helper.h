@@ -85,19 +85,19 @@ void print_rtm_array();
 
 void make_func_blocks();
 
-void print_func_blocks();
+void print_func_blocks(char *mode, FILE *fp);
 
 char *gen_reg(char *temp);
 
 int find_quad_index(char *quad_name);
 
-void print_function_prologue(int funcPtr);
+void print_function_prologue(int funcPtr, FILE *fp);
 
-void print_function_epilogue();
+void print_function_epilogue(FILE *fp);
 
 void update_offset();
 
-void target_code_translation(quad *q);
+void target_code_translation(quad *q, char *mode, FILE *fp);
 
 void print_target();
 

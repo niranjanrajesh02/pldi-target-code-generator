@@ -32,7 +32,11 @@ int main()
   print_quad_array("terminal", NULL);
 
   // // make_func_blocks();
-  // print_func_blocks();
+  print_func_blocks("terminal", NULL);
+  FILE *fp2 = fopen("A5_9_quads.asm", "w");
+  print_func_blocks("file", fp2);
+  fclose(fp2);
+
   // printf("\nTarget Code:\n");
   // print_target();
   return 0;
